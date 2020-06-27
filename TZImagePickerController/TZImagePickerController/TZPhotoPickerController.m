@@ -80,22 +80,26 @@ static CGFloat itemMargin = 5;
     TZImagePickerController *tzImagePickerVc = (TZImagePickerController *)self.navigationController;
     _isSelectOriginalPhoto = tzImagePickerVc.isSelectOriginalPhoto;
     _shouldScrollToBottom = YES;
-    self.view.backgroundColor = [UIColor whiteColor];
+    self.view.backgroundColor = [MDGTziColor colorWithLightColor:[UIColor whiteColor] DarkColor:[MDGTziColor colorWithHexString:@"010101"]];
     self.navigationItem.title = _model.name;
     UIBarButtonItem *cancelItem = [[UIBarButtonItem alloc] initWithTitle:tzImagePickerVc.cancelBtnTitleStr style:UIBarButtonItemStylePlain target:tzImagePickerVc action:@selector(cancelButtonClick)];
     [TZCommonTools configBarButtonItem:cancelItem tzImagePickerVc:tzImagePickerVc];
     self.navigationItem.rightBarButtonItem = cancelItem;
-    if (tzImagePickerVc.navLeftBarButtonSettingBlock) {
-        UIButton *leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        leftButton.frame = CGRectMake(0, 0, 44, 44);
-        [leftButton addTarget:self action:@selector(navLeftBarButtonClick) forControlEvents:UIControlEventTouchUpInside];
-        tzImagePickerVc.navLeftBarButtonSettingBlock(leftButton);
-        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:leftButton];
-    } else if (tzImagePickerVc.childViewControllers.count) {
-        UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithTitle:[NSBundle tz_localizedStringForKey:@"Back"] style:UIBarButtonItemStylePlain target:nil action:nil];
-        [TZCommonTools configBarButtonItem:backItem tzImagePickerVc:tzImagePickerVc];
-        [tzImagePickerVc.childViewControllers firstObject].navigationItem.backBarButtonItem = backItem;
-    }
+    UIBarButtonItem *leftItem = [[UIBarButtonItem alloc] initWithTitle:@"返回" style:UIBarButtonItemStylePlain target:tzImagePickerVc action:@selector(cancelButtonClick)];
+    [TZCommonTools configBarButtonItem:leftItem tzImagePickerVc:tzImagePickerVc];
+    self.navigationItem.leftBarButtonItem = leftItem;
+    
+//    if (tzImagePickerVc.navLeftBarButtonSettingBlock) {
+//        UIButton *leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//        leftButton.frame = CGRectMake(0, 0, 44, 44);
+//        [leftButton addTarget:self action:@selector(cancelButtonClick) forControlEvents:UIControlEventTouchUpInside];
+//        tzImagePickerVc.navLeftBarButtonSettingBlock(leftButton);
+//        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:leftButton];
+//    } else if (tzImagePickerVc.childViewControllers.count) {
+//        UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithTitle:[NSBundle tz_localizedStringForKey:@"Back"] style:UIBarButtonItemStylePlain target:nil action:nil];
+//        [TZCommonTools configBarButtonItem:backItem tzImagePickerVc:tzImagePickerVc];
+//        [tzImagePickerVc.childViewControllers firstObject].navigationItem.backBarButtonItem = backItem;
+//    }
     _showTakePhotoBtn = _model.isCameraRoll && ((tzImagePickerVc.allowTakePicture && tzImagePickerVc.allowPickingImage) || (tzImagePickerVc.allowTakeVideo && tzImagePickerVc.allowPickingVideo));
     // [self resetCachedAssets];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeStatusBarOrientationNotification:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
@@ -165,7 +169,7 @@ static CGFloat itemMargin = 5;
 - (void)configCollectionView {
     _layout = [[UICollectionViewFlowLayout alloc] init];
     _collectionView = [[TZCollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:_layout];
-    _collectionView.backgroundColor = [UIColor whiteColor];
+    _collectionView.backgroundColor = [MDGTziColor colorWithLightColor:[UIColor whiteColor] DarkColor:[MDGTziColor colorWithHexString:@"010101"]];
     _collectionView.dataSource = self;
     _collectionView.delegate = self;
     _collectionView.alwaysBounceHorizontal = NO;
@@ -216,15 +220,15 @@ static CGFloat itemMargin = 5;
     
     _bottomToolBar = [[UIView alloc] initWithFrame:CGRectZero];
     CGFloat rgb = 253 / 255.0;
-    _bottomToolBar.backgroundColor = [UIColor colorWithRed:rgb green:rgb blue:rgb alpha:1.0];
+    _bottomToolBar.backgroundColor = [MDGTziColor colorWithLightColor:[UIColor colorWithRed:rgb green:rgb blue:rgb alpha:1.0] DarkColor:[MDGTziColor colorWithHexString:@"010101"]];
     
     _previewButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_previewButton addTarget:self action:@selector(previewButtonClick) forControlEvents:UIControlEventTouchUpInside];
     _previewButton.titleLabel.font = [UIFont systemFontOfSize:16];
     [_previewButton setTitle:tzImagePickerVc.previewBtnTitleStr forState:UIControlStateNormal];
     [_previewButton setTitle:tzImagePickerVc.previewBtnTitleStr forState:UIControlStateDisabled];
-    [_previewButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    [_previewButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateDisabled];
+    [_previewButton setTitleColor:[MDGTziColor colorWithLightColor:[UIColor blackColor] DarkColor:[MDGTziColor colorWithHexString:@"CACACA"]] forState:UIControlStateNormal];
+    [_previewButton setTitleColor:[MDGTziColor colorWithLightColor:[UIColor lightGrayColor] DarkColor:[MDGTziColor colorWithHexString:@"CACACA"]] forState:UIControlStateDisabled];
     _previewButton.enabled = tzImagePickerVc.selectedModels.count;
     
     if (tzImagePickerVc.allowPickingOriginalPhoto) {
@@ -234,8 +238,8 @@ static CGFloat itemMargin = 5;
         _originalPhotoButton.titleLabel.font = [UIFont systemFontOfSize:16];
         [_originalPhotoButton setTitle:tzImagePickerVc.fullImageBtnTitleStr forState:UIControlStateNormal];
         [_originalPhotoButton setTitle:tzImagePickerVc.fullImageBtnTitleStr forState:UIControlStateSelected];
-        [_originalPhotoButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
-        [_originalPhotoButton setTitleColor:[UIColor blackColor] forState:UIControlStateSelected];
+        [_originalPhotoButton setTitleColor:[MDGTziColor colorWithLightColor:[UIColor lightGrayColor] DarkColor:[MDGTziColor colorWithHexString:@"CACACA"]] forState:UIControlStateNormal];
+        [_originalPhotoButton setTitleColor:[MDGTziColor colorWithLightColor:[UIColor blackColor] DarkColor:[MDGTziColor colorWithHexString:@"CACACA"]] forState:UIControlStateSelected];
         [_originalPhotoButton setImage:tzImagePickerVc.photoOriginDefImage forState:UIControlStateNormal];
         [_originalPhotoButton setImage:tzImagePickerVc.photoOriginSelImage forState:UIControlStateSelected];
         _originalPhotoButton.imageView.clipsToBounds = YES;
@@ -246,7 +250,7 @@ static CGFloat itemMargin = 5;
         _originalPhotoLabel = [[UILabel alloc] init];
         _originalPhotoLabel.textAlignment = NSTextAlignmentLeft;
         _originalPhotoLabel.font = [UIFont systemFontOfSize:16];
-        _originalPhotoLabel.textColor = [UIColor blackColor];
+        _originalPhotoLabel.textColor = [MDGTziColor colorWithLightColor:[UIColor blackColor] DarkColor:[MDGTziColor colorWithHexString:@"CACACA"]];
         if (_isSelectOriginalPhoto) [self getSelectedPhotoBytes];
     }
     
@@ -276,7 +280,7 @@ static CGFloat itemMargin = 5;
     
     _divideLine = [[UIView alloc] init];
     CGFloat rgb2 = 222 / 255.0;
-    _divideLine.backgroundColor = [UIColor colorWithRed:rgb2 green:rgb2 blue:rgb2 alpha:1.0];
+    _divideLine.backgroundColor = [MDGTziColor colorWithLightColor:[UIColor colorWithRed:rgb2 green:rgb2 blue:rgb2 alpha:1.0] DarkColor:[MDGTziColor colorWithHexString:@"252525"]];
     
     [_bottomToolBar addSubview:_divideLine];
     [_bottomToolBar addSubview:_previewButton];
@@ -425,8 +429,16 @@ static CGFloat itemMargin = 5;
                 for (id item in photos) { if ([item isKindOfClass:[NSNumber class]]) return; }
                 
                 if (havenotShowAlert) {
-                    [tzImagePickerVc hideAlertView:alertView];
-                    [self didGetAllPhotos:photos assets:assets infoArr:infoArr];
+                    if (alertView) {
+                        [alertView dismissViewControllerAnimated:YES completion:^{
+                            alertView = nil;
+                            [self didGetAllPhotos:photos assets:assets infoArr:infoArr];
+                        }];
+                    }else
+                    {
+                        [tzImagePickerVc hideAlertView:alertView];
+                        [self didGetAllPhotos:photos assets:assets infoArr:infoArr];
+                    }
                 }
             } progressHandler:^(double progress, NSError * _Nonnull error, BOOL * _Nonnull stop, NSDictionary * _Nonnull info) {
                 // 如果图片正在从iCloud同步中,提醒用户
@@ -453,7 +465,7 @@ static CGFloat itemMargin = 5;
     [tzImagePickerVc hideProgressHUD];
     
     if (tzImagePickerVc.autoDismiss) {
-        [self.navigationController dismissViewControllerAnimated:YES completion:^{
+        [self.navigationController dismissViewControllerAnimated:NO completion:^{
             [self callDelegateMethodWithPhotos:photos assets:assets infoArr:infoArr];
         }];
     } else {
@@ -568,6 +580,11 @@ static CGFloat itemMargin = 5;
         } else {
             // 2. select:check if over the maxImagesCount / 选择照片,检查是否超过了最大个数的限制
             if (tzImagePickerVc.selectedModels.count < tzImagePickerVc.maxImagesCount) {
+                if (model.asset.pixelWidth < 50 || model.asset.pixelHeight < 50) {
+                    
+                    [tzImagePickerVc showAlertWithTitle:@"图片太小，换一张图片试试吧"];
+                    return ;
+                }
                 if (tzImagePickerVc.maxImagesCount == 1 && !tzImagePickerVc.allowPreview) {
                     model.isSelected = YES;
                     [tzImagePickerVc addSelectedModel:model];
@@ -583,7 +600,13 @@ static CGFloat itemMargin = 5;
                 [strongSelf refreshBottomToolBarStatus];
                 [UIView showOscillatoryAnimationWithLayer:strongLayer type:TZOscillatoryAnimationToSmaller];
             } else {
-                NSString *title = [NSString stringWithFormat:[NSBundle tz_localizedStringForKey:@"Select a maximum of %zd photos"], tzImagePickerVc.maxImagesCount];
+                NSString *string = @"";
+                if (tzImagePickerVc.allowPickingVideo) {
+                    string = @"你最多只能选择 %zd 个视频";
+                } else {
+                    string = @"Select a maximum of %zd photos";
+                }
+                NSString *title = [NSString stringWithFormat:[NSBundle tz_localizedStringForKey:string], tzImagePickerVc.maxImagesCount];
                 [tzImagePickerVc showAlertWithTitle:title];
             }
         }
@@ -667,8 +690,17 @@ static CGFloat itemMargin = 5;
 
 // 调用相机
 - (void)pushImagePickerController {
+    
     // 提前定位
     TZImagePickerController *tzImagePickerVc = (TZImagePickerController *)self.navigationController;
+    if (tzImagePickerVc.allowPickingImage) {
+        
+    } else {
+        [self.navigationController dismissViewControllerAnimated:NO completion:^{
+           [[NSNotificationCenter defaultCenter] postNotificationName:@"TakeVideo" object:nil];
+        }];
+        return;
+    }
     if (tzImagePickerVc.allowCameraLocation) {
         __weak typeof(self) weakSelf = self;
         [[TZLocationManager manager] startLocationWithSuccessBlock:^(NSArray<CLLocation *> *locations) {

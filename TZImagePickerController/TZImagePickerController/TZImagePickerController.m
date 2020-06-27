@@ -50,7 +50,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.needShowStatusBar = ![UIApplication sharedApplication].statusBarHidden;
-    self.view.backgroundColor = [UIColor whiteColor];
+    self.view.backgroundColor = [MDGTziColor colorWithLightColor:[UIColor whiteColor] DarkColor:[MDGTziColor colorWithHexString:@"CACACA"]];
     self.navigationBar.barStyle = UIBarStyleBlack;
     self.navigationBar.translucent = YES;
     [TZImageManager manager].shouldFixOrientation = NO;
@@ -418,8 +418,8 @@
         _HUDContainer = [[UIView alloc] init];
         _HUDContainer.layer.cornerRadius = 8;
         _HUDContainer.clipsToBounds = YES;
-        _HUDContainer.backgroundColor = [UIColor darkGrayColor];
-        _HUDContainer.alpha = 0.7;
+       // _HUDContainer.backgroundColor = [MDGTziColor colorWithLightColor:[UIColor darkGrayColor] DarkColor:[MDGTziColor colorWithHexString:@"010101"]];
+        _HUDContainer.alpha = 1;
         
         _HUDIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
         
@@ -681,7 +681,10 @@
             [self callDelegateMethod];
         }];
     } else {
-        [self callDelegateMethod];
+        [self dismissViewControllerAnimated:YES completion:^{
+            [self callDelegateMethod];
+        }];
+      //  [self callDelegateMethod];
     }
 }
 
@@ -708,7 +711,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.isFirstAppear = YES;
-    self.view.backgroundColor = [UIColor whiteColor];
+    self.view.backgroundColor = [MDGTziColor colorWithLightColor:[UIColor whiteColor] DarkColor:[MDGTziColor colorWithHexString:@"CACACA"]];
     
     TZImagePickerController *imagePickerVc = (TZImagePickerController *)self.navigationController;
     UIBarButtonItem *cancelItem = [[UIBarButtonItem alloc] initWithTitle:imagePickerVc.cancelBtnTitleStr style:UIBarButtonItemStylePlain target:imagePickerVc action:@selector(cancelButtonClick)];
@@ -727,7 +730,7 @@
     }
     
     if (self.isFirstAppear && !imagePickerVc.navLeftBarButtonSettingBlock) {
-        self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:[NSBundle tz_localizedStringForKey:@"Back"] style:UIBarButtonItemStylePlain target:nil action:nil];
+//        self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:[NSBundle tz_localizedStringForKey:@"Back"] style:UIBarButtonItemStylePlain target:nil action:nil];
     }
     
     [self configTableView];
@@ -740,7 +743,7 @@
 
     if (self.isFirstAppear) {
         TZImagePickerController *imagePickerVc = (TZImagePickerController *)self.navigationController;
-        [imagePickerVc showProgressHUD];
+        //[imagePickerVc showProgressHUD];
     }
 
     TZImagePickerController *imagePickerVc = (TZImagePickerController *)self.navigationController;
@@ -761,7 +764,7 @@
                 if (!self->_tableView) {
                     self->_tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
                     self->_tableView.rowHeight = 70;
-                    self->_tableView.backgroundColor = [UIColor whiteColor];
+                    self->_tableView.backgroundColor = [MDGTziColor colorWithLightColor:[UIColor whiteColor] DarkColor:[MDGTziColor colorWithHexString:@"010101"]];
                     self->_tableView.tableFooterView = [[UIView alloc] init];
                     self->_tableView.dataSource = self;
                     self->_tableView.delegate = self;
@@ -820,7 +823,7 @@
     cell.albumCellDidSetModelBlock = imagePickerVc.albumCellDidSetModelBlock;
     cell.selectedCountButton.backgroundColor = imagePickerVc.iconThemeColor;
     cell.model = _albumArr[indexPath.row];
-    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+   // cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     return cell;
 }
 
@@ -938,6 +941,116 @@
         preferredLanguage = @"en";
     }
     _languageBundle = [NSBundle bundleWithPath:[[NSBundle tz_imagePickerBundle] pathForResource:preferredLanguage ofType:@"lproj"]];
+}
+
+@end
+@implementation MDGTziColor
++ (UIColor *)colorWithHexString:(NSString *)hexString {
+    if (hexString.length) {
+        NSMutableString *mHexColor = [NSMutableString stringWithString:hexString];
+        if ([hexString hasPrefix:@"#"]) {
+            [mHexColor replaceCharactersInRange:[hexString rangeOfString:@"#" ] withString:@"0x"];
+        }
+        long colorLong = strtoul([mHexColor cStringUsingEncoding:NSUTF8StringEncoding], 0, 16);
+        // 通过位与方法获取三色值
+        int R = (colorLong & 0xFF0000) >> 16;
+        int G = (colorLong & 0x00FF00) >> 8;
+        int B = colorLong & 0x0000FF;
+        
+        return [UIColor colorWithRed:R/255.0 green:G/255.0 blue:B/255.0 alpha:1.0];
+    }
+    return [UIColor whiteColor];
+}
+
++ (UIColor *)colorAlphaWithHexString:(NSString *)hexString {
+    if (hexString.length) {
+        NSString *realHexString = [hexString hasPrefix:@"#"] ? [hexString substringFromIndex:1] : hexString;
+        unsigned long colorLong = strtoul([realHexString cStringUsingEncoding:NSUTF8StringEncoding], 0, 16);
+        // 通过位与方法获取三色值
+        unsigned int B = colorLong & 0xff;
+        unsigned int G = (colorLong = colorLong >> 8) & 0xff;
+        unsigned int R = (colorLong = colorLong >> 8) & 0xff;
+        unsigned int A = (colorLong = colorLong >> 8) & 0xff;
+        return [UIColor colorWithRed:R/255.0 green:G/255.0 blue:B/255.0 alpha:A/255.0];
+    }
+    return [UIColor whiteColor];
+}
+/// 十六进制字符串获取颜色
+/// @param color 16进制色值  支持@“#123456”、 @“0X123456”、 @“123456”三种格式
+/// @param alpha 透明度
++ (UIColor *)colorWithHexString:(NSString *)color alpha:(CGFloat)alpha{
+    //删除字符串中的空格
+    NSString *cString = [[color stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] uppercaseString];
+    // String should be 6 or 8 characters
+    if ([cString length] < 6){
+        return [UIColor clearColor];
+    }
+    // strip 0X if it appears
+    //如果是0x开头的，那么截取字符串，字符串从索引为2的位置开始，一直到末尾
+    if ([cString hasPrefix:@"0X"]){
+        cString = [cString substringFromIndex:2];
+    }
+    //如果是#开头的，那么截取字符串，字符串从索引为1的位置开始，一直到末尾
+    if ([cString hasPrefix:@"#"]){
+        cString = [cString substringFromIndex:1];
+    }
+    if ([cString length] != 6){
+        return [UIColor clearColor];
+    }
+    
+    // Separate into r, g, b substrings
+    NSRange range;
+    range.location = 0;
+    range.length = 2;
+    //r
+    NSString *rString = [cString substringWithRange:range];
+    //g
+    range.location = 2;
+    NSString *gString = [cString substringWithRange:range];
+    //b
+    range.location = 4;
+    NSString *bString = [cString substringWithRange:range];
+    
+    // Scan values
+    unsigned int r, g, b;
+    [[NSScanner scannerWithString:rString] scanHexInt:&r];
+    [[NSScanner scannerWithString:gString] scanHexInt:&g];
+    [[NSScanner scannerWithString:bString] scanHexInt:&b];
+    return [UIColor colorWithRed:((float)r / 255.0f) green:((float)g / 255.0f) blue:((float)b / 255.0f) alpha:alpha];
+}
+
+/// 适配暗黑模式颜色   传入的UIColor对象
+/// @param lightColor 普通模式颜色
+/// @param darkColor 暗黑模式颜色
++ (UIColor *)colorWithLightColor:(UIColor *)lightColor DarkColor:(UIColor *)darkColor {
+    if (@available(iOS 13.0, *)) {
+        return [UIColor colorWithDynamicProvider:^UIColor * _Nonnull(UITraitCollection * _Nonnull trainCollection) {
+            if ([trainCollection userInterfaceStyle] == UIUserInterfaceStyleLight) {
+                return lightColor;
+            } else {
+                return darkColor;
+            }
+        }];
+    } else {
+        return lightColor ? lightColor : (darkColor ? darkColor : [UIColor clearColor]);
+    }
+}
+
+/// 适配暗黑模式颜色   颜色传入的是16进制字符串
+/// @param lightColor 普通模式颜色
+/// @param darkColor 暗黑模式颜色
++ (UIColor *)colorWithLightColorStr:(NSString *)lightColor DarkColor:(NSString *)darkColor{
+    return [MDGTziColor colorWithLightColor:[MDGTziColor colorWithHexString:lightColor] DarkColor:[MDGTziColor colorWithHexString:darkColor]];
+}
+
+
+/// 适配暗黑模式颜色   颜色传入的是16进制字符串 还有颜色的透明度
+/// @param lightColor 普通模式颜色
+/// @param lightAlpha 普通模式颜色透明度
+/// @param darkColor 暗黑模式颜色透明度
+/// @param darkAlpha 暗黑模式颜色
++ (UIColor *)colorWithLightColorStr:(NSString *)lightColor WithLightColorAlpha:(CGFloat)lightAlpha DarkColor:(NSString *)darkColor WithDarkColorAlpha:(CGFloat)darkAlpha{
+    return [MDGTziColor colorWithLightColor:[MDGTziColor colorWithHexString:lightColor alpha:lightAlpha] DarkColor:[MDGTziColor colorWithHexString:darkColor alpha:darkAlpha]];
 }
 
 @end

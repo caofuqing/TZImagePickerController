@@ -308,6 +308,11 @@
             return;
             // 2. if not over the maxImagesCount / 如果没有超过最大个数限制
         } else {
+            if (model.asset.pixelWidth < 50 || model.asset.pixelHeight < 50) {
+                
+                [_tzImagePickerVc showAlertWithTitle:@"图片太小，换一张图片试试吧"];
+                return ;
+            }
             [_tzImagePickerVc addSelectedModel:model];
             if (self.photos) {
                 [_tzImagePickerVc.selectedAssets addObject:_assetsTemp[self.currentIndex]];
@@ -384,6 +389,11 @@
     // 如果没有选中过照片 点击确定时选中当前预览的照片
     if (_tzImagePickerVc.selectedModels.count == 0 && _tzImagePickerVc.minImagesCount <= 0) {
         TZAssetModel *model = _models[self.currentIndex];
+        if (model.asset.pixelWidth < 50 || model.asset.pixelHeight < 50) {
+            
+            [_tzImagePickerVc showAlertWithTitle:@"图片太小，换一张图片试试吧"];
+            return ;
+        }
         [_tzImagePickerVc addSelectedModel:model];
     }
     NSIndexPath *indexPath = [NSIndexPath indexPathForItem:self.currentIndex inSection:0];
