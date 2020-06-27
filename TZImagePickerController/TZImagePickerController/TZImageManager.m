@@ -224,8 +224,21 @@ static dispatch_once_t onceToken;
             return nil;
         }
     }
-    NSString *timeLength = type == TZAssetModelMediaTypeVideo ? [NSString stringWithFormat:@"%0.0f",phAsset.duration] : @"";
-    timeLength = [self getNewTimeFromDurationSecond:timeLength.integerValue];
+    NSString *timeLength = type == TZAssetModelMediaTypeVideo ? [NSString stringWithFormat:@"%0.1f",phAsset.duration] : @"";
+    int a = 0;
+    int b;
+    if (timeLength.length == 0) {
+        b = 0;
+    } else {
+        a = [[timeLength componentsSeparatedByString:@"."][1] intValue];
+        b = [[timeLength componentsSeparatedByString:@"."][0] intValue];
+    }
+    if (a > 5) {
+        b = b + 1;
+    } else {
+        b = b;
+    }
+    timeLength = [self getNewTimeFromDurationSecond:b];
     model = [TZAssetModel modelWithAsset:asset type:type timeLength:timeLength];
     return model;
 }
@@ -769,8 +782,21 @@ static dispatch_once_t onceToken;
 
 - (TZAssetModel *)createModelWithAsset:(PHAsset *)asset {
     TZAssetModelMediaType type = [[TZImageManager manager] getAssetType:asset];
-    NSString *timeLength = type == TZAssetModelMediaTypeVideo ? [NSString stringWithFormat:@"%0.0f",asset.duration] : @"";
-    timeLength = [[TZImageManager manager] getNewTimeFromDurationSecond:timeLength.integerValue];
+    NSString *timeLength = type == TZAssetModelMediaTypeVideo ? [NSString stringWithFormat:@"%0.1f",asset.duration] : @"";
+       int a = 0;
+       int b;
+       if (timeLength.length == 0) {
+           b = 0;
+       } else {
+           a = [[timeLength componentsSeparatedByString:@"."][1] intValue];
+           b = [[timeLength componentsSeparatedByString:@"."][0] intValue];
+       }
+       if (a > 5) {
+           b = b + 1;
+       } else {
+           b = b;
+       }
+    timeLength = [[TZImageManager manager] getNewTimeFromDurationSecond:b];
     TZAssetModel *model = [TZAssetModel modelWithAsset:asset type:type timeLength:timeLength];
     return model;
 }
